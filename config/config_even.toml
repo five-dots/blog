@@ -117,7 +117,7 @@ copyright = ""
   mathjaxUseLocalFiles = false
 
   # contain author, lastMod, markdown link, license
-  postMetaInFooter = true
+  postMetaInFooter = false
 
   # Only effective when hugo will output .md files.
   linkToMarkDown = false

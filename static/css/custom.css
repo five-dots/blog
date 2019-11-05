@@ -2,3 +2,7 @@
 table:not([class]) {
     font-size: 14px;
 }
+
+h2 {
+    border-bottom: 1px solid #ddd;
+}
