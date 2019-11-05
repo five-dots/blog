@@ -1,0 +1,132 @@
+baseURL = "https://wizardly-wescoff-5aad39.netlify.com/"
+title = "five-dots blog"
+theme = "hugo-theme-jane"
+
+languageCode = "en"
+defaultContentLanguage = "en"
+hasCJKLanguage = true
+
+enableRobotsTXT = true
+enableEmoji = true
+
+paginate = 10
+rssLimit = 20
+
+# Highlight options.
+# See https://gohugo.io/content-management/syntax-highlighting/
+# Enable syntax highlighting with GitHub flavoured code fences
+PygmentsCodeFences = true
+# Use CSS classes to format highlighted code
+PygmentsUseClasses = true
+PygmentsCodefencesGuessSyntax = true
+PygmentsOptions = "linenos=table"
+
+disqusShortname = ""
+googleAnalytics = ""
+
+# use git commit log to generate lastmod record
+enableGitInfo = false 
+
+# default: author.name ↓
+copyright = ""
+
+[languages.en]
+  languageCode = "en"
+
+[author]
+  name = "five-dots"
+
+[sitemap]
+  changefreq = "weekly"
+  priority = 0.5
+  filename = "sitemap.xml"
+
+[permalinks]
+  post = "/:year/:month/:filename/"
+
+[[menu.main]]
+  name = "home"
+  weight = 10
+  identifier = "home"
+  url = "/"
+[[menu.main]]
+  name = "r packages"
+  weight = 20
+  identifier = "r-packages"
+  url = "/series/r-packages/"
+[[menu.main]]
+  name = "archives"
+  weight = 30
+  identifier = "archives"
+  url = "/post/"
+[[menu.main]]
+  name = "categories"
+  weight = 40
+  identifier = "categories"
+  url = "/categories/"
+[[menu.main]]
+  name = "tags"
+  weight = 50
+  identifier = "tags"
+  url = "/tags/"
+# [[menu.main]]
+#   name = "external-link"
+#   weight = 60
+#   url = "https://gohugo.io"
+
+[params]
+  since = "2019"
+
+  # if false, show post summaries on home page. Othewise show full content.
+  homeFullContent = false
+
+  # if false, Rss feed instead of the summary
+  rssFullContent = true
+
+  # site info (optional)
+  # default: the title value
+  logoTitle = "five-dots"
+  keywords = ["programming", "R", "statistics", "emacs", "finance", "trading"]
+  description = "five-dots blog"
+
+  # The date format to use; for a list of valid formats, see https://gohugo.io/functions/format/
+  dateFormatToUse = "Jan 2, 2006"
+
+  # Some global options, you can also close or open something in front matter for a single post,
+  # see more information from `archetypes/default.md`.
+  toc = true
+
+  # see https://github.com/dimsemenov/PhotoSwipe
+  photoswipe = true         
+
+  # contentCopyright = '<a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a>'
+
+  # Link custom CSS and JS assets (relative to /static/css and /static/js respectively)
+  # if ['custom.css'], load '/static/css/custom.css' file
+	customCSS = ["custom.css"]
+
+  # if ['custom.js'], load '/static/js/custom.js' file
+  customJS = []
+
+  # see https://www.mathjax.org/
+  mathjax = true
+
+  [params.social]
+    # a-email = "mailto:your@email.com"
+    # b-stack-overflow = "http://localhost:1313"
+    # c-twitter = "http://localhost:1313"
+    # d-facebook = "http://localhost:1313"
+    # e-linkedin = "http://localhost:1313"
+    # f-google = "http://localhost:1313"
+    g-github = "http://github.com/five-dots"
+    # h-weibo = "http://localhost:1313"
+    # i-zhihu = "http://localhost:1313"
+    # j-douban = "http://localhost:1313"
+    # k-pocket = "http://localhost:1313"
+    # l-tumblr = "http://localhost:1313"
+    # m-instagram = "http://localhost:1313"
+    # n-gitlab = "http://localhost:1313"
+    # o-goodreads = "http://localhost:1313"
+    # p-coding = "http://localhost:1313"
+    # q-bilibili = "http://localhost:1313"
+    # r-codeforces = "http://localhost:1313"

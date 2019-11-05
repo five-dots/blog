@@ -1,0 +1,5 @@
+#+STARTUP: indent
+
+* Personal blog repository
+
+This repo stores [[https://distracted-hermann-591406.netlify.com/][personal blog]] contents. The blog is operated by [[https://gohugo.io/][Hugo]] + [[https://ox-hugo.scripter.co/][ox-hugo]] + [[https://www.netlify.com/][Netlify]].
