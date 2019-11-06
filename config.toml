@@ -39,11 +39,11 @@ copyright = ""
   identifier = "home"
   url = "/"
 
-[[menu.main]]
-  name = "R Packages"
-  weight = 20
-  identifier = "r-packages"
-  url = "/series/r-packages/"
+# [[menu.main]]
+#   name = "R Packages"
+#   weight = 20
+#   identifier = "r-packages"
+#   url = "/series/r-packages/"
 
 # [[menu.main]]
 #   name = "Archives"
