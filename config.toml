@@ -19,7 +19,7 @@ pygmentsCodefencesGuessSyntax = true
 
 enableGitInfo = false
 disqusShortname = ""
-googleAnalytics = ""
+googleAnalytics = "UA-141603232-1"
 copyright = ""
 
 [permalinks]
