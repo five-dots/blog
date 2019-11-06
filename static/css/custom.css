@@ -6,3 +6,7 @@ table:not([class]) {
 h2 {
     border-bottom: 1px solid #ddd;
 }
+
+span.underline {
+    text-decoration: underline;
+}
