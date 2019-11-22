@@ -39,21 +39,15 @@ copyright = ""
   identifier = "home"
   url = "/"
 
-# [[menu.main]]
-#   name = "R Packages"
-#   weight = 20
-#   identifier = "r-packages"
-#   url = "/series/r-packages/"
-
-# [[menu.main]]
-#   name = "Archives"
-#   weight = 30
-#   identifier = "archives"
-#   url = "/post/"
+[[menu.main]]
+  name = "Series"
+  weight = 20
+  identifier = "series"
+  url = "/series/series-toc/"
 
 [[menu.main]]
   name = "Categories"
-  weight = 50
+  weight = 30
   identifier = "categories"
   url = "/categories/"
 
@@ -62,6 +56,12 @@ copyright = ""
   weight = 40
   identifier = "tags"
   url = "/tags/"
+
+[[menu.main]]
+  name = "Archives"
+  weight = 50
+  identifier = "archives"
+  url = "/post/"
 
 [params]
   # Used to give a friendly message when you have an incompatible update
