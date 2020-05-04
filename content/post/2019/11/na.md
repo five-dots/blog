@@ -12,6 +12,12 @@ toc = true
 ※ここで「モダン」と言っているのは、特に明確な定義があるわけではなく、最近開発されたパッケージという程度の意味である。
 
 
+## 更新履歴 {#更新履歴}
+
+-   2020/5/3 `{rlang}` の `%|%` 演算子を追加。
+-   2020/5/3 文書の体裁を修正。
+
+
 ## 方針 {#方針}
 
 この記事では `{dplyr}` や `{tidyr}` などのパッケージを積極的に使って `NA` 処理をする方法を紹介する方針だ。もちろん `{base}` の機能でも基本的な `NA` 処理は可能だ。
@@ -72,7 +78,9 @@ tidyr::replace_na(x, 0)
 | NA を削除 | `x[!is.na(x)]`         | `na.omit(x)`                         |
 | NA の有無 | `stopifnot(!anyNA(x))` | `assert_that(noNA(x))`               |
 | NA を置換 | `x[is.na(x)] <- 0`     | `replace_na(x, 0)`, `coalesce(x, 0)` |
-| NA に置換 | `x[x = 1] <- NA`       | `na_if(x, 1)`                        |
+| NA に置換 | `x[x==1] <- NA`        | `na_if(x, 1)`                        |
+
+また `{rlang}` に収録されている `%|%` も紹介する。他の言語でいうところの NULL 合体演算子のような機能で、コードがとても簡潔になる。
 
 
 ### data.frame {#data-dot-frame}
@@ -82,7 +90,9 @@ tidyr::replace_na(x, 0)
 | NA を削除 | `df[complete.cases(df), ]` | `drop_na(df, everything())`        |
 | NA の有無 | `stopifnot(!anyNA(df))`    | `assert(df, not_na, everything())` |
 | NA を置換 | `df[is.na(df)] <- 0`       | `replace_na(df, list(y  0))`       |
-| NA に置換 | `df[df = 1] <- NA`         | `mutate(df, na_if(x, 1))`          |
+| NA に置換 | `df[df==1] <- NA`          | `mutate(df, na_if(x, 1))`          |
+
+`NA` を削除は `NA` を含む行をまるごと削除する例である。
 
 また `data.frame` 向けの特殊な例として `tidyr::fill()` と `recipes::step_meanimpute()` などの `step_*impute()` の関数も一部紹介する。
 
@@ -94,6 +104,7 @@ tidyr::replace_na(x, 0)
 ```R
 library(dplyr)
 library(tidyr)
+library(rlang)
 library(recipes)
 library(assertr)
 library(assertthat)
@@ -162,7 +173,7 @@ dplyr::if_else(x > 0, "positive", NA)
 
 ```text
 Error: `false` must be a character vector, not a logical vector
-Call `rlang::last_error()` to see a backtrace
+Run `rlang::last_error()` to see where the error occurred.
 ```
 
 これは `dplyr::if_else()` が `TRUE/FALSE` の評価結果として、同じ型であることを求めるからだ。この場合には、 `NA_character_` を使って明示的に `character` 型の欠損値であることを示す必要がある。
@@ -221,9 +232,9 @@ df
 
 ### vector {#vector}
 
--   `stata::na.omit(object, ...)` を使う
--   モダンなパッケージと言っておきながら `{stats}` からの関数だが、十分にシンプルかつ明確
--   取り除かれたインデックスを `attribute` として保持してくれる
+-   `stats::na.omit(object, ...)` を使う
+    -   モダンなパッケージと言っておきながら `{stats}` からの関数だが、十分にシンプルかつ明確
+    -   取り除かれたインデックスを `attribute` として保持してくれる
 
 <!--listend-->
 
@@ -233,6 +244,11 @@ na.omit(x)
 ```
 
 ```text
+
+  x  y  z
+1 1  1  1
+2 2 NA NA
+3 3  3 NA
 
 [1] 1 2 3 5
 attr(,"na.action")
@@ -245,8 +261,8 @@ attr(,"class")
 ### data.frame {#data-dot-frame}
 
 -   `tidyr::drop_na(data, ...)` を使う
--   特定の列の `NA` を省いた `data.frame` を返してくれる
--   列選択には `dplyr::select()` 同様の方法が利用できる
+    -   特定の列の `NA` を省いた `data.frame` を返してくれる
+    -   列選択には `dplyr::select()` 同様の方法が利用できる
 
 <!--listend-->
 
@@ -261,7 +277,7 @@ df %>%
 | 3 | 3 | nil |
 
 -   全ての列から `NA` を含む行を削除したい場合は `tidyselect::everything()` を使う
--   `filter(df, complete.cases(df))` と同じだが、個人的にはより意図が明確になると思う
+    -   `filter(df, complete.cases(df))` と同じだが、個人的にはより意図が明確になると思う
 
 <!--listend-->
 
@@ -283,8 +299,8 @@ df %>%
 ### vector {#vector}
 
 -   `assertthat::noNA(x)` を使う
--   [ `{assertthat}` ](https://github.com/hadley/assertthat)は `base::stopifnot()` よりもエラー時により直感的なわかりやすいメッセージを出してくれる
--   `noNA()` は、ひとつでも `NA` が含まれていた場合 `FALSE` を返す
+    -   [ `{assertthat}` ](https://github.com/hadley/assertthat)は `base::stopifnot()` よりもエラー時により直感的なわかりやすいメッセージを出してくれる
+    -   `noNA()` は、ひとつでも `NA` が含まれていた場合 `FALSE` を返す
 
 <!--listend-->
 
@@ -294,6 +310,13 @@ assert_that(noNA(x))
 ```
 
 ```text
+
+  x y  z
+1 1 1  1
+3 3 3 NA
+
+  x y z
+1 1 1 1
 
 Error: x contains 1 missing values
 ```
@@ -314,8 +337,8 @@ Error: !anyNA(x) is not TRUE
 ### data.frame {#data-dot-frame}
 
 -   `assertr::assert()` と `assertr::not_na()` を組み合わせる
--   [ `{assertr}` ](https://github.com/ropensci/assertr) は `data.frame` をパイプ内でアサーションするためのパッケージ
--   エラーの場合に、違反箇所を明示してくれる
+    -   [ `{assertr}` ](https://github.com/ropensci/assertr) は `data.frame` をパイプ内でアサーションするためのパッケージ
+    -   エラーの場合に、違反箇所を明示してくれる
 
 <!--listend-->
 
@@ -370,13 +393,13 @@ replace_na(x, 0)
 ```
 
 ```text
-[1] 1 2 3 0 5
+[1] 1 2 0 4
 ```
 
 -   置換後の値が 1 つでない場合、 `dplyr::coalesce(...)` を使う
--   複数のベクトルから、最初の `NA` でない値を返してくれる
--   複数のベクトルの指定した順に `NA` でない値で合体してくれるイメージ
--   全ての引数は、長さ 1 もしくは、第 1 引数と同じ長さである必要がある
+    -   複数のベクトルから、最初の `NA` でない値を返してくれる
+    -   複数のベクトルの指定した順に `NA` でない値で合体してくれるイメージ
+    -   全ての引数は、長さ 1 もしくは、第 1 引数と同じ長さである必要がある
 
 <!--listend-->
 
@@ -387,15 +410,28 @@ coalesce(x, y)
 
 ```text
 
-Error: Argument 2 must be length 5 (length of `x`) or one, not 4
-Call `rlang::last_error()` to see a backtrace
+[1] 1 2 3 4
+```
+
+-   `{rlang}` の `%|%` を使う
+    -   他の言語でいう NULL 合体演算子のようなイメージ　
+    -   左辺の `NA` を右辺の値で置き換えてくれる
+
+<!--listend-->
+
+```R
+x %|% 0
+```
+
+```text
+[1] 1 2 0 4
 ```
 
 
 ### data.frame {#data-dot-frame}
 
 -   `data.frame` の場合も `tidyr::replace_na()` を使う
--   ただし、置換後の値を列ごとに `list` で指定する
+    -   ただし、置換後の値を列ごとに `list` で指定する
 
 <!--listend-->
 
@@ -410,8 +446,8 @@ replace_na(df, replace = list(y = 0, z = 2))
 | 3 | 3 | 2 |
 
 -   直前の `NA` でない値で置換したい場合 `tidyr::fill()` を使う
--   時系列データの `NA` 置換でよく利用する (当日が `NA` なら前日の値で埋める等)
--   `.direction = "down"/"up"` で下方向に置換するか、上方向に置換するかを選ぶことができる
+    -   時系列データの `NA` 置換でよく利用する (当日が `NA` なら前日の値で埋める等)
+    -   `.direction = "down"/"up"` で下方向に置換するか、上方向に置換するかを選ぶことができる
 
 <!--listend-->
 
@@ -426,8 +462,8 @@ fill(df, y, .direction = "down")
 | 3 | 3 | nil |
 
 -   特定の値ではなく、より柔軟に `NA` を置換したい場合は [ `{recipes}` ](https://github.com/tidymodels/recipes)パッケージの `step_*impute()` 関数群を使う
--   例えば、平均値で置換したい場合は `step_meanimpute()`
--   `{recipes}` や `{tidymodels}` パッケージ群の使い方は、[こちら](https://dropout009.hatenablog.com/entry/2019/01/06/124932)の記事がわかりやすい
+    -   例えば、平均値で置換したい場合は `step_meanimpute()`
+    -   `{recipes}` や `{tidymodels}` パッケージ群の使い方は、[こちら](https://dropout009.hatenablog.com/entry/2019/01/06/124932)の記事がわかりやすい
 
 <!--listend-->
 
@@ -446,7 +482,7 @@ df %>%
 | 3 | 3 | 1 |
 
 -   `step_*impute()` 系は現状 7 つの関数が用意されている
--   機能は名前からなんとなく想像はできると思うが、詳細はマニュアル参照
+    -   機能は名前からなんとなく想像はできると思うが、詳細はマニュアル参照
 
 <!--listend-->
 
@@ -456,6 +492,25 @@ pacman::p_funs(recipes) %>%
 ```
 
 ```text
+
+  x y z
+1 1 1 1
+2 2 0 2
+3 3 3 2
+
+  x y  z
+1 1 1  1
+2 2 1 NA
+3 3 3 NA
+
+# A tibble: 3 x 3
+      x     y     z
+  <
+<
+<dbl>
+1     1     1     1
+2     2     2     1
+3     3     3     1
 
 [1] "step_bagimpute"    "step_knnimpute"    "step_lowerimpute"
 [4] "step_meanimpute"   "step_medianimpute" "step_modeimpute"
@@ -469,10 +524,10 @@ pacman::p_funs(recipes) %>%
 ### vector {#vector}
 
 -   `dplyr::na_if(x, y)` を使う
--   特定の値を `NA` に置き換える
--   不正な値を `NA` にして、除外する際に使う
--   `x`: 対象となるベクトル
--   `y`: `NA` に置換するベクトル
+    -   特定の値を `NA` に置き換える
+    -   不正な値を `NA` にして、除外する際に使う
+    -   `x`: 対象となるベクトル
+    -   `y`: `NA` に置換するベクトル
 
 <!--listend-->
 
