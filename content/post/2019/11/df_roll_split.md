@@ -7,6 +7,8 @@ draft = false
 toc = true
 +++
 
+[GitHub](https://github.com/five-dots/notes/blob/master/lang/r/general/df%5Froll%5Fsplit/df%5Froll%5Fsplit.org) | [Blog](https://objective-boyd-9b8f29.netlify.app/2019/11/df%5Froll%5Fsplit/) | [Qiita](https://qiita.com/five-dots/items/46fc5c9505b111106e1c)
+
 R で時系列データを交差検証用に分割する際には[ `{rsample}` ](https://github.com/tidymodels/rsample)パッケージを利用すると便利だ。このパッケージの `rolling_origin()` 関数で、訓練データと検証データを時系列にスライドさせながら抽出することができる。
 
 ただし、この関数では訓練・検証のデータ件数を `data.frame` の行数でしか指定できない。これでは、時系列データを、月・週といったカレンダーの単位で分割したいケースに対応しづらい。例えば過去 12 ヶ月のデータでモデルを作成し、その後 3 ヶ月で予測の精度を評価する、といったケースだ。
@@ -110,7 +112,7 @@ FANG_nested <- FANG2 %>%
 FANG_nested
 ```
 
-```text
+```R
 # A tibble: 209 x 2
    weekend    data
    <date>     <list>
@@ -169,7 +171,7 @@ FANG_rolled <- rolling_origin(FANG_nested, initial = 52, assess = 13, cumulative
 FANG_rolled
 ```
 
-```text
+```R
 # Rolling origin forecast resampling
 # A tibble: 145 x 2
    splits          id
@@ -194,7 +196,7 @@ FANG_analysis1 <- analysis(FANG_rolled$splits[[1]])
 FANG_analysis1
 ```
 
-```text
+```R
 # A tibble: 52 x 2
    weekend    data
    <date>     <list>
@@ -251,7 +253,7 @@ FANG_rolled <- FANG_rolled %>%
 FANG_rolled
 ```
 
-```text
+```R
 # Rolling origin forecast resampling
 # A tibble: 145 x 3
    splits          id       lm_model
