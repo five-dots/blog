@@ -314,14 +314,14 @@ os             linux-gnu
 system         x86_64, linux-gnu
 status
 major          3
-minor          6.1
-year           2019
-month          07
-day            05
-svn rev        76782
+minor          6.3
+year           2020
+month          02
+day            29
+svn rev        77875
 language       R
-version.string R version 3.6.1 (2019-07-05)
-nickname       Action of the Toes
+version.string R version 3.6.3 (2020-02-29)
+nickname       Holding the Windsock
 ```
 
 
@@ -377,8 +377,8 @@ sys.version
 ```
 
 ```text
-3.6.8 (default, Oct  7 2019, 12:59:55)
-[GCC 8.3.0]
+3.8.2 (default, Apr  8 2020, 12:38:13)
+[GCC 7.5.0]
 ```
 
 
