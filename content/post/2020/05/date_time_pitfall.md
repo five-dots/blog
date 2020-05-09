@@ -1,5 +1,5 @@
 +++
-title = "R の Date/POSIXct 型ではまったこと"
+title = "R の Date/POSIXct 型でハマったこと"
 date = 2020-05-09
 tags = ["r"]
 categories = ["programming"]
@@ -7,11 +7,17 @@ draft = false
 toc = true
 +++
 
-R の Date 型、POSIXct 型を利用していて過去にはまったポイントを備忘録として整理しておく。
+[GitHub](https://github.com/five-dots/notes/blob/master/lang/r/general/date%5Ftime%5Fpitfall/date%5Ftime%5Fpitfall.org) | [Blog](https://objective-boyd-9b8f29.netlify.app/2020/05/date%5Ftime%5Fpitfall/) | [Qiita](https://qiita.com/five-dots/items/b90c5f4cf31d60d04ed9)
+
+R の `Date` / `POSIXct` 型を利用していて過去にハマったポイントを備忘録として整理しておく。
 
 
-## for loop 内で `Date` が `numeric` になってしまう問題 {#for-loop-内で-date-が-numeric-になってしまう問題}
+## `for` loop 内で `Date` が `numeric` になってしまう問題 {#for-loop-内で-date-が-numeric-になってしまう問題}
 
+
+### 現象 {#現象}
+
+-   `Date` `vector` に対して `for` loop でアクセスすると意図した結果にならない
 -   `for` loop 内で class attribute が欠落してしまうことが原因
     -   [For loops in R can lose class information@R-bloggers](https://www.r-bloggers.com/for-loops-in-r-can-lose-class-information/)
     -   `Date` は `numeric` に class attribute を追加したものであるため
@@ -33,9 +39,8 @@ for (date in dates) {
 
 <br />
 
--   対策 1: <kbd>list</kbd> に変換してからループする
 
-<!--listend-->
+### 対策 1: `list` に変換してからループする {#対策-1-list-に変換してからループする}
 
 ```R
 for (date in as.list(dates)) {
@@ -50,9 +55,8 @@ for (date in as.list(dates)) {
 
 <br />
 
--   対策 2: インデックスでアクセスする
 
-<!--listend-->
+### 対策 2: インデックスでアクセスする {#対策-2-インデックスでアクセスする}
 
 ```R
 for (i in seq_along(dates)) {
@@ -70,6 +74,9 @@ for (i in seq_along(dates)) {
 
 ## `POSIXct` から `Date` への変換で日付がずれる問題 {#posixct-から-date-への変換で日付がずれる問題}
 
+
+### 現象 {#現象}
+
 -   参考: [R: POSIXct -> Date で日付がズレる@Qiita](https://qiita.com/kota9/items/657c8c0ac5092e3ec1ff)
 
 <!--listend-->
@@ -80,7 +87,7 @@ as.Date(td)
 ```
 
 ```R
-[1] "2020-05-01"
+[1] "2020-04-30"
 ```
 
 <br />
@@ -104,8 +111,12 @@ as.Date(as.POSIXct("2020-05-01 9:00:00")) # 2020-05-01 00:00 へ変換されて�
 
 <br />
 
--   対策 1： <kbd>tz</kbd> を指定すれば問題ない
-    -   変換前と変換後のタイムゾーンを揃えることを意識しておけば良い
+
+### 対策 1: `tz` を指定する {#対策-1-tz-を指定する}
+
+-   変換前と変換後のタイムゾーンを揃えることを意識しておけば良い
+    -   タイムゾーンは、"Area/Locality" の形式で指定すべき
+        -   [Understanding timezone strings in R@Stackoverflow](https://stackoverflow.com/questions/37205128/understanding-timezone-strings-in-r)
 
 <!--listend-->
 
@@ -125,8 +136,10 @@ as.Date(td)
 
 <br />
 
--   対策 2: `lubridate::as_date()` を利用する
-    -   `lubridate::as_Date()` は、元の `POSIXct` のタイムゾーンを保持して変換してくれる
+
+### 対策 2: `lubridate::as_date()` を利用する {#対策-2-lubridate-as-date-を利用する}
+
+-   `lubridate::as_Date()` は、元の `POSIXct` のタイムゾーンを保持して変換してくれる
 
 <!--listend-->
 
@@ -144,67 +157,105 @@ lubridate::as_date(td)
 
 ## ミリ秒の丸め問題 {#ミリ秒の丸め問題}
 
+
+### 現象 {#現象}
+
 -   文字列から `POSIXct` を作成する際に、ミリ秒がずれる (切り捨てられる)
     -   [R issue with rounding milliseconds@Stackoverflow](https://stackoverflow.com/questions/10931972/r-issue-with-rounding-milliseconds)
+    -   `format` の `%OS` は `"second.millisecond"` の形式
 
 <!--listend-->
 
 ```R
 options(digits.secs = 3)
-ms_dt <- as.POSIXct("2019-06-28 12:34:01.123", format = "%Y-%m-%d %H:%M:%OS")
+ms_dt <- as.POSIXct("2020-05-01 00:00:00.123", format = "%Y-%m-%d %H:%M:%OS")
 ms_dt
 ```
 
 ```R
-[1] "2019-06-28 12:34:01.122 JST"
+[1] "2020-05-01 00:00:00.122 JST"
 ```
 
 <br />
 
--   対策 1: <kbd>lubridate::ymd_hms()</kbd> ならずれない
 
-<!--listend-->
+### 対策 1: `lubridate::ymd_hms()` を使う {#対策-1-lubridate-ymd-hms-を使う}
 
 ```R
 options(digits.secs = 3)
-lubridate::ymd_hms("2019-06-28 12:34:01.123", tz = "Asia/Tokyo")
+lubridate::ymd_hms("2020-05-01 00:00:00.123", tz = "Asia/Tokyo")
 ```
 
 ```R
-[1] "2019-06-28 12:34:01.123 JST"
+[1] "2020-05-01 00:00:00.123 JST"
 ```
 
 <br />
 
--   ミリ秒単位の経過時間を POSIXct に変換する
-    -   株価のティックデータなどで必要になる手法
-    -   [R How to convert milliseconds from origin to date and keep the milliseconds@Stackoverflow](https://stackoverflow.com/questions/49828433/r-how-to-convert-milliseconds-from-origin-to-date-and-keep-the-milliseconds)
-    -   1000 で割って秒数に換算する (+0.0005 を足すことで丸め誤差を消すことができる)
+
+### [番外] ミリ秒単位の経過時間を `POSIXct` に変換する {#番外-ミリ秒単位の経過時間を-posixct-に変換する}
+
+-   [R How to convert milliseconds from origin to date and keep the milliseconds@Stackoverflow](https://stackoverflow.com/questions/49828433/r-how-to-convert-milliseconds-from-origin-to-date-and-keep-the-milliseconds)
+-   株価のティックデータなど、ミリ秒単位の経過時間で表現されるデータがある
+-   1000 で割って秒数に換算する
+-   +0.0005 を足すことで丸め誤差を消すことができる
 
 <!--listend-->
 
 ```R
-msec <- 1506378448123
-dt <- as.POSIXct(msec/1000, origin = "1970-01-01", tz = "America/Chicago")
-format(dt + 0.0005, "%Y-%m-%d %H:%M:%OS3")
+msec <- 1588291200123 # 2020-05-01 00:00:00.123 JST
+dt <- as.POSIXct(msec/1000, origin = "1970-01-01", tz = "JST")
+format(dt + 0.0005, "%Y-%m-%d %H:%M:%OS")
 ```
 
 ```R
-[1] "2017-09-25 17:27:28.123"
+[1] "2020-05-01 00:00:00.123"
 ```
 
 <br />
 
--   <kbd>lubridate::as_datetime()</kbd> でも同じようにずれる
+-   `lubridate::as_datetime()` でも同じようにずれるので、+0.0005 する
 
 <!--listend-->
 
 ```R
-lubridate::as_datetime(msec/1000 + 0.0005)
+lubridate::as_datetime(msec/1000 + 0.0005, tz = "JST")
 ```
 
 ```R
-[1] "2017-09-25 22:27:28.123 UTC"
+[1] "2020-05-01 00:00:00.123 JST"
 ```
 
 <br />
+
+
+## セッション情報 {#セッション情報}
+
+```R
+sessionInfo()
+```
+
+```R
+R version 3.6.3 (2020-02-29)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 18.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=C
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=C
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base
+
+loaded via a namespace (and not attached):
+[1] compiler_3.6.3  generics_0.0.2  tools_3.6.3     Rcpp_1.0.4.6
+[5] lubridate_1.7.8
+```
